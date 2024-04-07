@@ -17,10 +17,23 @@ public class CryptoCurrencyService {
         this.client = client;
     }
 
-    public double getBitcoinPrice() throws IOException {
+    public double getBitcoinPrice() {
+        return price.get() == null ? updateBitcoinPrice() : price.get();
+    }
+
+    public double updateBitcoinPrice () {
+      try {
+        price.set(client.getBitcoinPrice());
+      } catch (IOException e) {
+        log.error("Binance API unavailable");
         if (price.get() == null) {
-            price.set(client.getBitcoinPrice());
+          price.set(0.0);
+          log.error("Bitcoin price unknown and is set to $0.0");
+          throw new RuntimeException();
+        } else {
+          log.error("Bitcoin price was not updated, the value was left at {} $", price.get());
         }
-        return price.get();
+      }
+      return price.get();
     }
 }

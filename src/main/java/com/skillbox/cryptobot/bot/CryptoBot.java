@@ -1,13 +1,17 @@
 package com.skillbox.cryptobot.bot;
 
+import static com.skillbox.cryptobot.configuration.StaticValues.PROMPT;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.List;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
 @Service
@@ -35,5 +39,18 @@ public class CryptoBot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
+        try {
+            execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), PROMPT));
+        } catch (TelegramApiException e) {
+            log.error("Telegram API Exception occurred.");
+        }
+    }
+
+    public void performMailing(SendMessage message) {
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error("Telegram API Exception occurred during notification");
+        }
     }
 }

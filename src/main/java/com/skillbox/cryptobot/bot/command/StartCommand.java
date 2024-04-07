@@ -1,7 +1,11 @@
 package com.skillbox.cryptobot.bot.command;
 
-import lombok.AllArgsConstructor;
+import static com.skillbox.cryptobot.configuration.StaticValues.PROMPT;
+
+import com.skillbox.cryptobot.database.SubscriptionEntity;
+import com.skillbox.cryptobot.database.SubscriptionRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -14,9 +18,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  * Обработка команды начала работы с ботом
  */
 @Service
-@AllArgsConstructor
 @Slf4j
 public class StartCommand implements IBotCommand {
+
+    private final SubscriptionRepository repository;
+
+    @Autowired
+    public StartCommand(SubscriptionRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public String getCommandIdentifier() {
@@ -30,18 +40,22 @@ public class StartCommand implements IBotCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
-        SendMessage answer = new SendMessage();
-        answer.setChatId(message.getChatId());
-
-        answer.setText("""
-                Привет! Данный бот помогает отслеживать стоимость биткоина.
-                Поддерживаемые команды:
-                 /get_price - получить стоимость биткоина
-                """);
+        long telegramUserId = message.getChatId();
+        createDatabaseRecord(telegramUserId);
+        String answerText = "Привет! Данный бот помогает отслеживать стоимость биткоина\n" + PROMPT;
         try {
-            absSender.execute(answer);
+            absSender.execute(new SendMessage(String.valueOf(message.getChatId()), answerText));
         } catch (TelegramApiException e) {
-            log.error("Error occurred in /start command", e);
+            log.error("Error (TelegramApiException) occurred in /start command", e);
         }
     }
+
+
+    private void createDatabaseRecord(long telegramUserId) {
+        if (repository.findByUserIdEquals(telegramUserId) == null) {
+            SubscriptionEntity newUser = new SubscriptionEntity(telegramUserId);
+            repository.save(newUser);
+        }
+    }
+
 }

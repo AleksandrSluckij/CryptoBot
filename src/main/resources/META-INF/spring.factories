@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=com.skillbox.cryptobot.configuration.properties.DelayPropertiesPostProcessor
+org.springframework.boot.diagnostics.FailureAnalyzer=com.skillbox.cryptobot.configuration.properties.DelayPropertiesAnalyzer

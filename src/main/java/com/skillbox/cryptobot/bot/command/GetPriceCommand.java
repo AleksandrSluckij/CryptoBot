@@ -1,5 +1,7 @@
 package com.skillbox.cryptobot.bot.command;
 
+import static com.skillbox.cryptobot.configuration.StaticValues.CUR_PRICE_FORMAT;
+
 import com.skillbox.cryptobot.service.CryptoCurrencyService;
 import com.skillbox.cryptobot.utils.TextUtil;
 import lombok.AllArgsConstructor;
@@ -9,6 +11,7 @@ import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
  * Обработка команды получения текущей стоимости валюты
@@ -32,13 +35,11 @@ public class GetPriceCommand implements IBotCommand {
 
     @Override
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
-        SendMessage answer = new SendMessage();
-        answer.setChatId(message.getChatId());
-        try {
-            answer.setText("Текущая цена биткоина " + TextUtil.toString(service.getBitcoinPrice()) + " USD");
-            absSender.execute(answer);
-        } catch (Exception e) {
-            log.error("Ошибка возникла /get_price методе", e);
+        String answerText = String.format(CUR_PRICE_FORMAT, TextUtil.toString(service.getBitcoinPrice()));
+      try {
+            absSender.execute(new SendMessage(String.valueOf(message.getChatId()), answerText));
+        } catch (TelegramApiException e) {
+            log.error("Error (TelegramApiException) occurred in /get_price command", e);
         }
     }
 }
