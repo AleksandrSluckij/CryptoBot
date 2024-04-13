@@ -2,7 +2,7 @@ package com.skillbox.cryptobot.configuration;
 import org.springframework.stereotype.Component;
 
 @Component
-public final class StaticValues {
+public final class MessagesStrings {
 
   public static final String PROMPT = """
       Поддерживаемые команды:
@@ -30,5 +30,5 @@ public final class StaticValues {
   public static final String NO_SUBSCR = "Активные подписки отсутствуют";
 
 
-  private StaticValues () {}
+  private MessagesStrings() {}
 }

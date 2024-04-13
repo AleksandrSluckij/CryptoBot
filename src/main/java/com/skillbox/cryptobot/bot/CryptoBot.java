@@ -1,6 +1,7 @@
 package com.skillbox.cryptobot.bot;
 
-import static com.skillbox.cryptobot.configuration.StaticValues.PROMPT;
+import static com.skillbox.cryptobot.configuration.MessagesStrings.PROMPT;
+import static com.skillbox.cryptobot.utils.AuxiliaryUtil.extractChatIdString;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,7 @@ public class CryptoBot extends TelegramLongPollingCommandBot {
     @Override
     public void processNonCommandUpdate(Update update) {
         try {
-            execute(new SendMessage(String.valueOf(update.getMessage().getChatId()), PROMPT));
+            execute(new SendMessage(extractChatIdString(update.getMessage()), PROMPT));
         } catch (TelegramApiException e) {
             log.error("Telegram API Exception occurred.");
         }

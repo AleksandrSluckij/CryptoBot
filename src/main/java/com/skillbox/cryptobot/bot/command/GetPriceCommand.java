@@ -1,6 +1,7 @@
 package com.skillbox.cryptobot.bot.command;
 
-import static com.skillbox.cryptobot.configuration.StaticValues.CUR_PRICE_FORMAT;
+import static com.skillbox.cryptobot.configuration.MessagesStrings.CUR_PRICE_FORMAT;
+import static com.skillbox.cryptobot.utils.AuxiliaryUtil.extractChatIdString;
 
 import com.skillbox.cryptobot.service.CryptoCurrencyService;
 import com.skillbox.cryptobot.utils.TextUtil;
@@ -37,7 +38,7 @@ public class GetPriceCommand implements IBotCommand {
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
         String answerText = String.format(CUR_PRICE_FORMAT, TextUtil.toString(service.getBitcoinPrice()));
       try {
-            absSender.execute(new SendMessage(String.valueOf(message.getChatId()), answerText));
+            absSender.execute(new SendMessage(extractChatIdString(message), answerText));
         } catch (TelegramApiException e) {
             log.error("Error (TelegramApiException) occurred in /get_price command", e);
         }

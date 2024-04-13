@@ -1,7 +1,8 @@
 package com.skillbox.cryptobot.bot.command;
 
-import static com.skillbox.cryptobot.configuration.StaticValues.CUR_SUBSCR_FORMAT;
-import static com.skillbox.cryptobot.configuration.StaticValues.NO_SUBSCR;
+import static com.skillbox.cryptobot.configuration.MessagesStrings.CUR_SUBSCR_FORMAT;
+import static com.skillbox.cryptobot.configuration.MessagesStrings.NO_SUBSCR;
+import static com.skillbox.cryptobot.utils.AuxiliaryUtil.extractChatIdString;
 
 import com.skillbox.cryptobot.database.SubscriptionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class GetSubscriptionCommand implements IBotCommand {
                 : String.format(CUR_SUBSCR_FORMAT, subscriptionValue);
 
         try {
-            absSender.execute(new SendMessage(String.valueOf(message.getChatId()), answerText));
+            absSender.execute(new SendMessage(extractChatIdString(message), answerText));
         } catch (TelegramApiException e) {
             log.error("Error occurred (TelegramApiException) in /get_subscription command", e);
         }

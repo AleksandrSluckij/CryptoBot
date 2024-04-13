@@ -1,6 +1,7 @@
 package com.skillbox.cryptobot.bot.command;
 
-import static com.skillbox.cryptobot.configuration.StaticValues.PROMPT;
+import static com.skillbox.cryptobot.configuration.MessagesStrings.PROMPT;
+import static com.skillbox.cryptobot.utils.AuxiliaryUtil.extractChatIdString;
 
 import com.skillbox.cryptobot.database.SubscriptionEntity;
 import com.skillbox.cryptobot.database.SubscriptionRepository;
@@ -44,7 +45,7 @@ public class StartCommand implements IBotCommand {
         createDatabaseRecord(telegramUserId);
         String answerText = "Привет! Данный бот помогает отслеживать стоимость биткоина\n" + PROMPT;
         try {
-            absSender.execute(new SendMessage(String.valueOf(message.getChatId()), answerText));
+            absSender.execute(new SendMessage(extractChatIdString(message), answerText));
         } catch (TelegramApiException e) {
             log.error("Error (TelegramApiException) occurred in /start command", e);
         }

@@ -1,12 +1,14 @@
 package com.skillbox.cryptobot.bot.command;
 
-import static com.skillbox.cryptobot.configuration.StaticValues.CUR_PRICE_FORMAT;
-import static com.skillbox.cryptobot.configuration.StaticValues.ERROR_MESSAGE;
-import static com.skillbox.cryptobot.configuration.StaticValues.NEW_SUBSCR_FORMAT;
+import static com.skillbox.cryptobot.configuration.MessagesStrings.CUR_PRICE_FORMAT;
+import static com.skillbox.cryptobot.configuration.MessagesStrings.ERROR_MESSAGE;
+import static com.skillbox.cryptobot.configuration.MessagesStrings.NEW_SUBSCR_FORMAT;
+import static com.skillbox.cryptobot.utils.AuxiliaryUtil.extractChatIdString;
 
 import com.skillbox.cryptobot.database.SubscriptionRepository;
 import com.skillbox.cryptobot.service.CryptoCurrencyService;
 import com.skillbox.cryptobot.utils.TextUtil;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,7 +55,7 @@ public class SubscribeCommand implements IBotCommand {
             String text = String.format(CUR_PRICE_FORMAT,
                 TextUtil.toString(service.getBitcoinPrice()));
             try {
-                absSender.execute(new SendMessage(String.valueOf(message.getChatId()), text));
+                absSender.execute(new SendMessage(extractChatIdString(message), text));
             } catch (TelegramApiException e) {
                 log.error("Error occurred (TelegramApiException) in /subscribe command", e);
             }
@@ -65,7 +67,7 @@ public class SubscribeCommand implements IBotCommand {
         }
 
         try {
-            absSender.execute(new SendMessage(String.valueOf(message.getChatId()), answerText));
+            absSender.execute(new SendMessage(extractChatIdString(message), answerText));
         } catch (TelegramApiException e) {
             log.error("Error occurred (TelegramApiException) in /subscribe command", e);
         }
@@ -75,10 +77,14 @@ public class SubscribeCommand implements IBotCommand {
         if (arguments.length != 1) {
             return null;
         }
-        try {
-            return Double.parseDouble(arguments[0]);
-        } catch (NumberFormatException ex) {
-            return null;
+        Optional<String> subscriptionArgument = Optional.ofNullable(arguments[0]);
+        if (subscriptionArgument.isPresent()) {
+            try {
+                return Double.parseDouble(arguments[0]);
+            } catch (NumberFormatException ex) {
+                return null;
+            }
         }
+        return null;
     }
 }

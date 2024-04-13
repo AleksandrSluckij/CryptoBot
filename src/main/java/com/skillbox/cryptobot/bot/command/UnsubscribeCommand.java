@@ -1,6 +1,7 @@
 package com.skillbox.cryptobot.bot.command;
 
-import static com.skillbox.cryptobot.configuration.StaticValues.NO_SUBSCR;
+import static com.skillbox.cryptobot.configuration.MessagesStrings.NO_SUBSCR;
+import static com.skillbox.cryptobot.utils.AuxiliaryUtil.extractChatIdString;
 
 import com.skillbox.cryptobot.database.SubscriptionEntity;
 import com.skillbox.cryptobot.database.SubscriptionRepository;
@@ -52,7 +53,7 @@ public class UnsubscribeCommand implements IBotCommand {
         }
 
         try {
-            absSender.execute(new SendMessage(String.valueOf(message.getChatId()), answerText));
+            absSender.execute(new SendMessage(extractChatIdString(message), answerText));
         } catch (TelegramApiException e) {
             log.error("Error occurred (TelegramApiException) in /unsubscribe command", e);
         }
